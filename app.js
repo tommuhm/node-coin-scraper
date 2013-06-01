@@ -1,2 +1,0 @@
-var btce = require("btce");
-
