@@ -2,7 +2,7 @@
  * Module dependencies.
  */
 var db = require("./db");
-var Scraper = require("./Scraper");
+var Scraper = require("./ascraper");
 var BtceUtil = require("./btce-util");
 var BTCE = require("./btce-ext");
 var winston = require("winston");

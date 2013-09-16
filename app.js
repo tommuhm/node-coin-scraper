@@ -1,7 +1,7 @@
 /**
  * Module dependencies.
  */
-var Scraper = require("./scraper");
+var Scraper = require("./ascraper");
 var BtceUtil = require("./btce-util");
 var winston = require("winston");
 var log = new (winston.Logger)({
