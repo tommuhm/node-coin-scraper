@@ -22,7 +22,7 @@ var btce = new BTCE({agent: agent});
 
 var Scraper = function (pairs, time) {
   var that = this;
-  that.count = 5;
+  that.count = 10;
   that.pairs = pairs;
   that.scheduleTimer = time;
   that.schedulerRunning = false;
