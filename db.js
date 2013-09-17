@@ -37,6 +37,8 @@ _.forEach(BtceUtil.getPairs(), function (pair) {
   PairModel[pair] = mongoose.model(pair, trade, pair);
 });
 
+var firstTrade;
+
 var DB = {
   PairModel: PairModel,
   TradeInfo: mongoose.model("TradeInfo", tradeInfo, "trades"),
@@ -53,24 +55,27 @@ var DB = {
     });
 
     // check for missing trades - send notification if there are any
-//    that.findFirst(that.TradeInfo, function (err, firstTrade) {
-//      that.findLast(that.TradeInfo, function (err, lastTrade) {
-//        that.getCount(that.TradeInfo, function (err, tradeCount) {
-//          var missingTradeCount = lastTrade._id - firstTrade._id - tradeCount;
-//          if (missingTradeCount > 0) {
-//            log.warn("There are some trades missing count: " + missingTradeCount);
-//          }
-//        });
-//      });
-//    });
+    if (firstTrade === undefined) {
+      if (pair === "btc_usd") {
+        firstTrade = _.last(trades);
+      }
+    } else {
+      that.findLast(that.TradeInfo, function (err, lastTrade) {
+        that.getCount(that.TradeInfo, {_id: {$gt: firstTrade._id}}, function (err, tradeCount) {
+          var missingTradeCount = lastTrade._id - firstTrade._id - tradeCount;
+          if (missingTradeCount > 0) {
+            log.warn("There are some trades missing count: " + missingTradeCount);
+          }
+        });
+      });
+    }
 
-    that.bulkInsert(that.TradeInfo, trades, function(err) {
-
+    that.bulkInsert(that.TradeInfo, trades, function (err) {
     });
 
-    that.getCount(that.PairModel[pair], function (err, oldCount) {
+    that.getCount(that.PairModel[pair], {}, function (err, oldCount) {
       that.bulkInsert(that.PairModel[pair], trades, function (err) {
-        that.getCount(that.PairModel[pair], function (err, newCount) {
+        that.getCount(that.PairModel[pair], {}, function (err, newCount) {
           var tradesInserted = newCount - oldCount;
           if (tradesInserted > 0) {
             log.debug("pair: " + pair + " new trades: " + tradesInserted);
@@ -93,8 +98,8 @@ var DB = {
   findLast: function (model, cb) {
     model.findOne({}, null, {sort: {_id: -1}}, cb);
   },
-  getCount: function (model, cb) {
-    model.count({}, cb);
+  getCount: function (model, criteria, cb) {
+    model.count(criteria, cb);
   }
 };
 
