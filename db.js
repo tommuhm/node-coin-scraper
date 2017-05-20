@@ -57,7 +57,7 @@ var DB = {
     // check for missing trades - send notification if there are any
     if (firstTrade === undefined) {
       if (pair === "btc_usd") {
-        firstTrade = _.last(trades);
+        firstTrade = _.first(trades);
       }
     } else {
       that.findLast(that.TradeInfo, function (err, lastTrade) {
